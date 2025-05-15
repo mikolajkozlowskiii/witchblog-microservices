@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      httpclient:
+        wiretap: true
+      httpserver:
+        wiretap: true
+      routes:
+        - id: orchestrator_route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/orchestrator-service/**
+        - id: payment_route
+          uri: http://localhost:8086
+          predicates:
+            - Path=/payment-service/**
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: DEBUG
+    reactor:
+      netty: INFO
+    org:
+      springframework:
+        cloud:
+          gateway: TRACE
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true
