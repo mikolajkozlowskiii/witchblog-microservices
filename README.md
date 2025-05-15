@@ -28,12 +28,9 @@ docker run -d --name kafka \
 ## Spring Boot — Local Profile
 
 To run the application with a local profile (`application-local.yml`), add the following VM option:
-
+```bash
 -Dspring.profiles.active=local
-
-
-to use local profile add VM option: -Dspring.profiles.active=local 
-
+```
 
 ## Project Startup Instructions
 
