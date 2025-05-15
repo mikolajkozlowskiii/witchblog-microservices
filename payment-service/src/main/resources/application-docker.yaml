@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: product-service
+  cloud:
+    feign:
+      discovery:
+        enabled: true
+      loadbalancer:
+        retry:
+          enabled: true
+    openfeign:
+      circuitbreaker:
+        enabled: true
+        alphanumeric-ids:
+          enabled: true
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+      slidingWindowSize: 4
+      permittedNumberOfCallsInHalfOpenState: 10
+      waitDurationInOpenState: 10000000
+      failureRateThreshold: 60
+    someShared:
+      slidingWindowSize: 5
+      permittedNumberOfCallsInHalfOpenState: 10
+  instances:
+    CatalogClient_findByUniqId:
+      baseConfig: default
+      waitDurationInOpenState: 5000
+    CatalogClient_findBySku:
+      baseConfig: someShared
+    InventoryClient_findByUniqIds:
+      baseConfig: someShared
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://registry-service:8761/eureka}
+  instance:
+    preferIpAddress: true
+    hostname: product-service
+
+
+
+
