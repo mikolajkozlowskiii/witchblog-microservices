@@ -3,16 +3,25 @@ spring:
     name: product-service
   kafka:
     bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    consumer:
-      group-id: payment-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: '*'
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: witchblog
+    password: 40c57b33ae35449a990ebd90976ad69d
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      schema: payment
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: payment
+  sql:
+    init:
+      platform: postgres
+      mode: always
+      schema-locations: classpath:schema.sql
 
 management:
   endpoint:
@@ -28,7 +37,12 @@ eureka:
     preferIpAddress: true
     hostname: localhost
 
-
-
 server:
   port: 8086
+
+common:
+  consumer:
+    topic: payment
+    group-id: payment-group
+
+blik-service: success
