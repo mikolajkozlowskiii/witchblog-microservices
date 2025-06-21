@@ -1,0 +1,32 @@
+<html><head><title>STOMP Test</title></head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<script>
+    const userId = "47f51fed-9289-4301-98da-318d1157722b";
+    const processId = "4f56f09e-598c-4e3a-b47a-9b4138bfbdf4";
+
+    const socket = new SockJS(`http://localhost:8080/ws?userId=${userId}&processId=${processId}`);
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log("✅ Connected: " + frame);
+
+        stompClient.send(
+            "/app/register",
+            { userId: userId, processId: processId },
+            JSON.stringify({ })
+        );
+
+        stompClient.subscribe("/user/topic/messages", function (message) {
+            console.log("📩 Received: ", message.body);
+        });
+
+    }, function (error) {
+        console.error("Connection error: ", error);
+    });
+</script>
+
+
+</body></html>
