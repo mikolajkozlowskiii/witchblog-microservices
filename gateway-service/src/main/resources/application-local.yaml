@@ -8,10 +8,19 @@ spring:
       httpserver:
         wiretap: true
       routes:
-        - id: orchestrator_route
+        - id: orchestrator_ws
+          uri: http://localhost:8083
+          predicates:
+            - Path=/ws/**
+          metadata:
+            connect-timeout: 5000
+            response-timeout: 10000
+
+        - id: orchestrator_rest
           uri: http://localhost:8083
           predicates:
             - Path=/orchestrator-service/**
+
         - id: payment_route
           uri: http://localhost:8086
           predicates:
