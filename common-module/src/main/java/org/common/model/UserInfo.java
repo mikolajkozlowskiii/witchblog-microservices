@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 
 @Embeddable
-public record UserInfo(String name, LocalDate birthday, String favouriteColor, String martialStatus, String favouriteNumber) {
+public record UserInfo(String name, LocalDate dateOfBirth, String favoriteColor, String relationshipStatus, String favoriteNumber) {
 
     // no args constructor is required by JPA
     public UserInfo(){
