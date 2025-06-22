@@ -31,7 +31,7 @@ public class PaymentController {
         paymentProcessRepository
                 .findByDivinationIdAndUserId(UUID.fromString(request.processId()), UUID.fromString(request.userId()))
                 .filter(paymentProcess -> paymentProcess.getPaymentState().equals(PaymentState.PENDING))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No payment process found in correct state for divination id: " + request.processId() + " and user id: " + request.userId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No payment process found in correct state for divination id: " + request.processId() + " and user id: " + request.userId()));
 
         String code = request.BLIKCode();
         if(code == null || code.length() != 6 || !code.matches("\\d+")) {
