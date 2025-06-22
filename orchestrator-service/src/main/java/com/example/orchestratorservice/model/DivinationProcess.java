@@ -28,7 +28,7 @@ public class DivinationProcess {
     @Column(nullable = false)
     private UUID userId;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String divination;
 
     @Column

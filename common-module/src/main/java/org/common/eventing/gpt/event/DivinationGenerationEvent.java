@@ -13,3 +13,4 @@ public record DivinationGenerationEvent(String divination, DivinationGenerationS
         return TYPE;
     }
 }
+/**/

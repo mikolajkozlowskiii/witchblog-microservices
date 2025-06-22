@@ -19,4 +19,6 @@ public interface DivinationProcessRepository extends JpaRepository<DivinationPro
     void updateStatusById(@Param("id") UUID id, @Param("status") DivinationProcessStatus status);
 
     Optional<List<DivinationProcess>> findByUserId(UUID userId);
+
+    Optional<DivinationProcess> findById(UUID id);
 }
