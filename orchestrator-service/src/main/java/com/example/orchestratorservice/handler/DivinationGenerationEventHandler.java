@@ -1,5 +1,6 @@
 package com.example.orchestratorservice.handler;
 
+import com.example.orchestratorservice.component.RandomIntegrationFailMessageGenerator;
 import com.example.orchestratorservice.model.DivinationProcess;
 import com.example.orchestratorservice.repository.DivinationProcessRepository;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+import static org.common.model.DivinationGenerationStatus.FAILURE;
+import static org.common.model.DivinationProcessStatus.FailedIntegrationWithChatGPT;
 import static org.common.model.DivinationProcessStatus.Finished;
 
 @Component
@@ -33,9 +36,18 @@ public class DivinationGenerationEventHandler implements EventHandler<Divination
                 event.processId(), event.status(), event.divination());
 
         process.setDivination(event.divination());
-        process.setStatus(Finished);
+
+        String message;
+        if(event.status().equals(FAILURE)) {
+            process.setStatus(FailedIntegrationWithChatGPT);
+            message = RandomIntegrationFailMessageGenerator.getRandomFortuneFail();
+        } else{
+             process.setStatus(Finished);
+             message = "Process finished successfully";
+        }
+
 
         divinationProcessRepository.save(process);
-        kafkaTemplate.send("frontend", new ProcessEndedEvent(Finished, "Process finished successfully", process.getUserId().toString(), process.getId().toString()));
+        kafkaTemplate.send("frontend", new ProcessEndedEvent(process.getStatus(), message, process.getUserId().toString(), process.getId().toString()));
     }
 }
