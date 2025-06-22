@@ -5,9 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.common.eventing.gpt.tarot.TarotCard;
 import org.common.model.DivinationProcessStatus;
 import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -29,6 +33,9 @@ public class DivinationProcess {
     @Column
     @Enumerated(EnumType.STRING)
     private DivinationProcessStatus status = DivinationProcessStatus.Started;
+
+    @ElementCollection
+    private List<TarotCard> tarotCards = new ArrayList<>();
 
     @Column
     private String statusComment;
