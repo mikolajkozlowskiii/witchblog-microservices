@@ -5,6 +5,7 @@ import com.example.orchestratorservice.repository.DivinationProcessRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.common.model.UserInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,9 +21,10 @@ public class ProcessController {
     private final ObjectMapper objectMapper;
 
     @PostMapping("/process/{userId}")
-    public ResponseEntity<String> startProcess(@PathVariable("userId") String userId) throws JsonProcessingException {
+    public ResponseEntity<String> startProcess(@PathVariable("userId") String userId, @RequestBody UserInfo userInfo) throws JsonProcessingException {
         DivinationProcess divinationProcess = new DivinationProcess();
         divinationProcess.setUserId(UUID.fromString(userId));
+        divinationProcess.setUserInfo(userInfo);
         divinationProcessRepository.save(divinationProcess);
         return ResponseEntity.ok(objectMapper.writeValueAsString(divinationProcess));
     }
