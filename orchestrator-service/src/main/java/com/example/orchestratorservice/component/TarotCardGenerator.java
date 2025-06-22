@@ -17,8 +17,8 @@ public class TarotCardGenerator {
     private double reverseProbability;
 
     public List<TarotCard> generateNRandomTarotCards(int n) {
-        if(n < 0 || n > 78){
-            throw new IllegalArgumentException("n must be between 0 and 78");
+        if(n < 0 || n > TarotCardsLookupTable.tarotCards.size() - 1){
+            throw new IllegalArgumentException("n must be between 0 and " + TarotCardsLookupTable.tarotCards.size());
         }
 
         Random random = new Random();
