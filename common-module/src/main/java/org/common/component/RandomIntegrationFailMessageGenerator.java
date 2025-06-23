@@ -1,4 +1,4 @@
-package com.example.orchestratorservice.component;
+package org.common.component;
 
 import java.util.Random;
 

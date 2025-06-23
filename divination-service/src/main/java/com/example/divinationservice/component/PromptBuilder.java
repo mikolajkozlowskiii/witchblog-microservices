@@ -59,10 +59,10 @@ public class PromptBuilder {
                - **Favourite Number**: %s
                """.formatted(
                 safe(userInfo.name()),
-                safe(userInfo.birthday()),
-                safe(userInfo.favouriteColor()),
-                safe(userInfo.martialStatus()),
-                safe(userInfo.favouriteNumber())
+                safe(userInfo.dateOfBirth()),
+                safe(userInfo.favoriteColor()),
+                safe(userInfo.relationshipStatus()),
+                safe(userInfo.favoriteNumber())
         );
     }
 

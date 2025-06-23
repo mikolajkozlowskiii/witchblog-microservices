@@ -7,6 +7,7 @@ import com.example.divinationservice.repository.DivinationProcessRepository;
 import com.example.divinationservice.service.DivinationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.common.component.RandomIntegrationFailMessageGenerator;
 import org.common.eventing.core.handler.EventHandler;
 import org.common.eventing.core.model.Event;
 import org.common.eventing.gpt.event.DivinationGenerationEvent;
@@ -66,7 +67,7 @@ public class DivinationRequestedEventHandler implements EventHandler<DivinationR
 
             Event failureEvent = mapToDivinationGenerationEvent(
                     DivinationGenerationStatus.FAILURE,
-                    exception.getMessage(),
+                    RandomIntegrationFailMessageGenerator.getRandomFortuneFail(),
                     event
             );
             publishEventToTopics(failureEvent);

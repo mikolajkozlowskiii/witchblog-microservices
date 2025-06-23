@@ -1,6 +1,6 @@
 package com.example.orchestratorservice.handler;
 
-import com.example.orchestratorservice.component.RandomIntegrationFailMessageGenerator;
+import org.common.component.RandomIntegrationFailMessageGenerator;
 import com.example.orchestratorservice.model.DivinationProcess;
 import com.example.orchestratorservice.repository.DivinationProcessRepository;
 import lombok.AllArgsConstructor;

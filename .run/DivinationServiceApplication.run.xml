@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="DivinationServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
     <option name="ACTIVE_PROFILES" value="local" />
-    <module name="registry-service" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.registryservice.RegistryServiceApplication" />
+    <module name="divination-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.divinationservice.DivinationServiceApplication" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
