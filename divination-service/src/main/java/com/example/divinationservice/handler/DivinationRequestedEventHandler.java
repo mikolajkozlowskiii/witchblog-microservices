@@ -1,5 +1,6 @@
 package com.example.divinationservice.handler;
 
+import com.example.divinationservice.component.TokenCounter;
 import com.example.divinationservice.dto.DivinationGenerationResult;
 import com.example.divinationservice.dto.DivinationRequestDTO;
 import com.example.divinationservice.model.DivinationProcess;
@@ -12,6 +13,7 @@ import org.common.eventing.core.handler.EventHandler;
 import org.common.eventing.core.model.Event;
 import org.common.eventing.gpt.event.DivinationGenerationEvent;
 import org.common.eventing.gpt.event.DivinationRequestedEvent;
+import org.common.eventing.gpt.event.SendTokenConsumptionInfoEvent;
 import org.common.model.DivinationGenerationStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -59,6 +61,8 @@ public class DivinationRequestedEventHandler implements EventHandler<DivinationR
                     generationResult.responseDTO().content(),
                     event
             );
+
+            countAndSendTokenUsageToManagementService(generationResult);
             publishEventToTopics(successEvent);
 
         } catch (Exception exception) {
@@ -72,6 +76,15 @@ public class DivinationRequestedEventHandler implements EventHandler<DivinationR
             );
             publishEventToTopics(failureEvent);
         }
+    }
+
+    private void countAndSendTokenUsageToManagementService(DivinationGenerationResult divinationGenerationResult) {
+        int promptTokenUsage = TokenCounter.countTokens(divinationGenerationResult.prompt());
+        int resultTokenUsage = TokenCounter.countTokens(divinationGenerationResult.responseDTO().content());
+
+        Event event = new SendTokenConsumptionInfoEvent(promptTokenUsage + resultTokenUsage);
+
+        kafkaTemplate.send("management", event);
     }
 
 

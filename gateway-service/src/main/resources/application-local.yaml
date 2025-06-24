@@ -33,6 +33,11 @@ spring:
           uri: http://localhost:8086
           predicates:
             - Path=/payment-service/**
+
+        - id: management_route
+          uri: http://localhost:8088
+          predicates:
+            - Path=/management-service/**
 management:
   endpoints:
     web:
