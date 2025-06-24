@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: management-service
+  kafka:
+    bootstrap-servers: localhost:9092
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: witchblog
+    password: 40c57b33ae35449a990ebd90976ad69d
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      schema: management
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        ddl-auto: create-drop
+        default_schema: management
+  sql:
+    init:
+      platform: postgres
+      mode: always
+      schema-locations: classpath:schema.sql
+
+management:
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true
+    hostname: localhost
+
+server:
+  port: 8088
+
+common:
+  consumer:
+    topic: management
+    group-id: management-group
