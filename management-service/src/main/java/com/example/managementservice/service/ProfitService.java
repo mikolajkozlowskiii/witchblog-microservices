@@ -1,5 +1,6 @@
 package com.example.managementservice.service;
 
+import com.example.managementservice.dto.ProfitDTO;
 import com.example.managementservice.repository.PaymentRepository;
 import com.example.managementservice.repository.PromptCostRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class ProfitService {
     private double tokenCostPerMillion;
 
 
-    public double calculateProfit(Date startDate, Date endDate) {
+    public ProfitDTO calculateProfit(Date startDate, Date endDate) {
         if (startDate == null) startDate = Date.from(LocalDate.of(1, 1, 1).atStartOfDay(ZoneOffset.UTC).toInstant());
         if (endDate == null) endDate = Date.from(LocalDate.of(9999, 12, 31).atStartOfDay(ZoneOffset.UTC).toInstant());
 
@@ -34,7 +35,13 @@ public class ProfitService {
         }
 
         double tokenCost = (totalUsedTokens / 1_000_000.0) * tokenCostPerMillion;
+        double profit = totalPayments - tokenCost;
 
-        return totalPayments - tokenCost;
+        return ProfitDTO
+                .builder()
+                .profit(profit)
+                .totalPayments(totalPayments)
+                .totalUsedTokens(totalUsedTokens)
+                .build();
     }
 }
