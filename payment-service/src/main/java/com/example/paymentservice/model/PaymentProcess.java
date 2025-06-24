@@ -33,7 +33,7 @@ public class PaymentProcess {
     private PaymentState paymentState = PaymentState.PENDING;
 
     @Column
-    private float amount = 5.0f;
+    private float amount = 1.0f;
 
 
 }

@@ -18,7 +18,7 @@ public class Payment {
     private Long id;
 
     @Column
-    private float amount = 5.0f;
+    private float amount = 1.0f;
 
     @Column
     @CreationTimestamp
