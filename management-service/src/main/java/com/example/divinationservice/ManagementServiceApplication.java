@@ -1,4 +1,4 @@
-package com.example;
+package com.example.divinationservice;
 
 import org.common.config.EventBusAutoConfiguration;
 import org.springframework.boot.SpringApplication;
