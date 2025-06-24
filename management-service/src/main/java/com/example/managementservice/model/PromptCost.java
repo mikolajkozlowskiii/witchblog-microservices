@@ -1,4 +1,4 @@
-package com.example.divinationservice.model;
+package com.example.managementservice.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

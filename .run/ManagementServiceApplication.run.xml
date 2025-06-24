@@ -2,7 +2,7 @@
   <configuration default="false" name="ManagementServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" value="local" />
     <module name="management-service" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.divinationservice.ManagementServiceApplication" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.managementservice.ManagementServiceApplication" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
