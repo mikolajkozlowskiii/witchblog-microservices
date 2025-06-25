@@ -28,6 +28,7 @@ public class PaymentCompletedEventHandler implements EventHandler<PaymentComplet
 
     @Override
     public void handle(PaymentCompletedEvent event) {
+        divinationProcessRepository.updatePaymentStatusById(UUID.fromString(event.processId()), event.state());
         switch (event.state()) {
             case PAYMENT_SUCCEEDED -> handleSuccess(event);
             case PAYMENT_FAILED_BUSINESS_ERROR, PAYMENT_FAILED_TECHNICAL_ERROR -> handleError(event);

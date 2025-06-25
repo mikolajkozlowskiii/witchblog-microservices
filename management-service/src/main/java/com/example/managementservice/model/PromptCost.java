@@ -18,7 +18,10 @@ public class PromptCost {
     private Long id;
 
     @Column
-    private Integer usedTokens;
+    private Integer usedInputTokens;
+
+    @Column
+    private Integer usedOutputTokens;
 
     @Column
     @CreationTimestamp

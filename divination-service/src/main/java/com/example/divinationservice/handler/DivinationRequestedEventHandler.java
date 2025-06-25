@@ -82,7 +82,7 @@ public class DivinationRequestedEventHandler implements EventHandler<DivinationR
         int promptTokenUsage = TokenCounter.countTokens(divinationGenerationResult.prompt());
         int resultTokenUsage = TokenCounter.countTokens(divinationGenerationResult.responseDTO().content());
 
-        Event event = new SendTokenConsumptionInfoEvent(promptTokenUsage + resultTokenUsage);
+        Event event = new SendTokenConsumptionInfoEvent(promptTokenUsage, resultTokenUsage);
 
         kafkaTemplate.send("management", event);
     }

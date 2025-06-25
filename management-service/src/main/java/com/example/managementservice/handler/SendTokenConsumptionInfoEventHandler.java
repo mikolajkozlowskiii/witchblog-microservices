@@ -16,7 +16,8 @@ public class SendTokenConsumptionInfoEventHandler implements EventHandler<SendTo
     @Override
     public void handle(SendTokenConsumptionInfoEvent event) {
         PromptCost cost = new PromptCost();
-        cost.setUsedTokens(event.tokenConsumption());
+        cost.setUsedInputTokens(event.inputTokenConsumption());
+        cost.setUsedOutputTokens(event.outputTokenConsumption());
         promptCostRepository.save(cost);
     }
 }

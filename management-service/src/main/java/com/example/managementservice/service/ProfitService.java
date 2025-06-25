@@ -18,8 +18,10 @@ public class ProfitService {
     private final PaymentRepository paymentRepository;
     private final PromptCostRepository promptCostRepository;
 
-    @Value("${token.cost.per.million:2}")
-    private double tokenCostPerMillion;
+    @Value("${token.input.cost.per.million:1.1}")
+    private double inputTokenCostPerMillion;
+    @Value("${token.output.cost.per.million:4.4}")
+    private double outputTokenCostPerMillion;
 
 
     public ProfitDTO calculateProfit(Date startDate, Date endDate) {
@@ -28,13 +30,11 @@ public class ProfitService {
 
 
         double totalPayments = paymentRepository.sumPaymentsBetweenDates(startDate, endDate);
-        Long totalUsedTokens = promptCostRepository.sumUsedTokensBetweenDates(startDate, endDate);
+        Long totalUsedInputTokens = promptCostRepository.sumUsedInputTokensBetweenDates(startDate, endDate);
+        Long totalUsedOutputTokens = promptCostRepository.sumUsedTokensOutputBetweenDates(startDate, endDate);
+        Long totalUsedTokens = totalUsedInputTokens + totalUsedOutputTokens;
 
-        if (totalUsedTokens == null) {
-            totalUsedTokens = 0L;
-        }
-
-        double tokenCost = (totalUsedTokens / 1_000_000.0) * tokenCostPerMillion;
+        double tokenCost = (totalUsedInputTokens / 1_000_000.0) * inputTokenCostPerMillion + (totalUsedOutputTokens / 1_000_000.0) * outputTokenCostPerMillion;
         double profit = totalPayments - tokenCost;
 
         return ProfitDTO
