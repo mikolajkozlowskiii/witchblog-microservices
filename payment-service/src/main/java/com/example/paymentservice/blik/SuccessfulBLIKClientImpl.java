@@ -19,6 +19,7 @@ public class SuccessfulBLIKClientImpl extends BLIKClient {
     @Override
     public void payWithBLIK(String code, String userId, String processId) {
         ResponseFromBLIKAPIEvent event = new ResponseFromBLIKAPIEvent(userId, processId, PaymentState.PAYMENT_SUCCEEDED, null);
+        updateProcess(processId, event.state());
         kafkaTemplate.send("payment", event);
         kafkaTemplate.send("management", event);
     }

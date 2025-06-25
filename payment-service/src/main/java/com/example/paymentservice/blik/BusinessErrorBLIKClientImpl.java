@@ -18,6 +18,7 @@ public class BusinessErrorBLIKClientImpl extends BLIKClient {
     @Override
     public void payWithBLIK(String code, String userId, String processId) {
         ResponseFromBLIKAPIEvent event = new ResponseFromBLIKAPIEvent(userId, processId, PaymentState.PAYMENT_FAILED_BUSINESS_ERROR, "BLIK code expired");
+        updateProcess(processId, event.state());
         kafkaTemplate.send("payment", event);
     }
 }

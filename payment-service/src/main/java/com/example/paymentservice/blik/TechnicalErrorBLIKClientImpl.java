@@ -19,5 +19,6 @@ public class TechnicalErrorBLIKClientImpl extends BLIKClient {
     public void payWithBLIK(String code, String userId, String processId) {
         ResponseFromBLIKAPIEvent event = new ResponseFromBLIKAPIEvent(userId, processId, PaymentState.PAYMENT_FAILED_TECHNICAL_ERROR, "Integration with BLIK failed. Service temporary unavailable.");
         kafkaTemplate.send("payment", event);
+        updateProcess(processId, event.state());
     }
 }
