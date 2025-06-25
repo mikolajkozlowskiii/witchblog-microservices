@@ -4,13 +4,21 @@ import com.example.divinationservice.component.PromptBuilder;
 import com.example.divinationservice.dto.DivinationGenerationResult;
 import com.example.divinationservice.dto.DivinationRequestDTO;
 import com.example.divinationservice.dto.DivinationResponseDTO;
+import com.example.divinationservice.model.DivinationProcess;
+import com.example.divinationservice.repository.DivinationProcessRepository;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.common.eventing.core.model.Event;
+import org.common.eventing.gpt.event.DivinationGenerationEvent;
+import org.common.model.DivinationGenerationStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +26,9 @@ import java.time.LocalDateTime;
 public class DivinationServiceImpl implements DivinationService{
     private final ChatModel chatModel;
     private final PromptBuilder promptBuilder;
+    private final KafkaTemplate<String, Event> kafkaTemplate;
+    private final DivinationProcessRepository repository;
+
     @Override
     public DivinationGenerationResult generateDivination(DivinationRequestDTO divinationRequestDTO) {
         String prompt = promptBuilder.buildPrompt(divinationRequestDTO);
@@ -35,5 +46,23 @@ public class DivinationServiceImpl implements DivinationService{
                 : chatModel.getClass().getSimpleName();
 
         return new DivinationGenerationResult(dto, prompt, modelName);
+    }
+
+    @Override
+    public Optional<String> retryIntegration(UUID processId) {
+        try {
+            DivinationProcess process = repository
+                    .getDivinationProcessByProcessId(processId)
+                    .orElseThrow();
+            String divinationResult = chatModel.chat(process.getPrompt());
+            process.setResponse(divinationResult);
+            process.setStatus(DivinationGenerationStatus.SUCCESS.name());
+            repository.save(process);
+            kafkaTemplate.send("orchestrator", new DivinationGenerationEvent(divinationResult, DivinationGenerationStatus.SUCCESS, processId.toString(), process.getUserId().toString()));
+            return Optional.of(divinationResult);
+        } catch (Exception exception) {
+            return Optional.empty();
+        }
+
     }
 }

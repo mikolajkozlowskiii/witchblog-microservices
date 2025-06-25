@@ -1,9 +1,12 @@
 package com.example.divinationservice.model;
 
 import jakarta.persistence.*;
+import org.common.eventing.gpt.tarot.TarotCard;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +26,12 @@ public class DivinationProcess {
 
     @Column
     private UUID divinationId;
+
+    @Column
+    private UUID processId;
+
+    @ElementCollection
+    private List<TarotCard> tarotCards = new ArrayList<>();
 
     @Column
     private UUID userId;

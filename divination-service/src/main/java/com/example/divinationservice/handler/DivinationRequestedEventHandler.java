@@ -103,6 +103,8 @@ public class DivinationRequestedEventHandler implements EventHandler<DivinationR
 
         DivinationProcess process = new DivinationProcess();
         process.setDivinationId(UUID.randomUUID());
+        process.setProcessId(UUID.fromString(event.processId()));
+        process.setTarotCards(event.cards());
         process.setUserId(UUID.fromString(event.userId()));
         process.setStatus(DivinationGenerationStatus.SUCCESS.name());
         process.setPrompt(result.prompt());
