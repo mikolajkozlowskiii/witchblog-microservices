@@ -4,11 +4,9 @@ import com.example.managementservice.dto.ProfitDTO;
 import com.example.managementservice.service.ProfitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
@@ -21,9 +19,16 @@ public class ProfitController {
 
     @GetMapping("/profit")
     public ResponseEntity<ProfitDTO> getProfit(
+            @RequestHeader(value = "X-Admin-Password", required = false) String adminPassword,
             @RequestParam(name = "startDate",required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate
     ) {
+        if(!"tarot123".equals(adminPassword)) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
+
         ProfitDTO response = profitService.calculateProfit(startDate, endDate);
 
         return ResponseEntity.ok(response);
