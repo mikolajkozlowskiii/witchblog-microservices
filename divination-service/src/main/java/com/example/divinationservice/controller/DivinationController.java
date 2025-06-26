@@ -23,7 +23,7 @@ public class DivinationController {
         return ResponseEntity.ok(divinationService.generateDivination(divinationRequestDTO));
     }
 
-    @GetMapping("/retry/{processId}")
+    @PostMapping("/retry/{processId}")
     public ResponseEntity<String> retryIntegration(@PathVariable("processId") String processId){
         return divinationService
                 .retryIntegration(UUID.fromString(processId))
