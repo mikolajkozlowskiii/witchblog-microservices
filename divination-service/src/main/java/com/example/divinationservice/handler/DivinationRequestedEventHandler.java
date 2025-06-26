@@ -1,5 +1,6 @@
 package com.example.divinationservice.handler;
 
+import com.example.divinationservice.component.PromptBuilder;
 import com.example.divinationservice.component.TokenCounter;
 import com.example.divinationservice.dto.DivinationGenerationResult;
 import com.example.divinationservice.dto.DivinationRequestDTO;
@@ -27,66 +28,51 @@ import java.util.UUID;
 @Slf4j
 public class DivinationRequestedEventHandler implements EventHandler<DivinationRequestedEvent> {
 
-    private static final String FRONTEND_TOPIC     = "frontend";
+    private static final String FRONTEND_TOPIC = "frontend";
     private static final String ORCHESTRATOR_TOPIC = "orchestrator";
+    private static final String MANAGEMENT_TOPIC = "management";
     private static final List<String> DESTINATION_TOPICS = List.of(FRONTEND_TOPIC, ORCHESTRATOR_TOPIC);
 
     private final DivinationService divinationService;
     private final DivinationProcessRepository divinationProcessRepository;
     private final KafkaTemplate<String, Event> kafkaTemplate;
+    private final PromptBuilder promptBuilder;
 
     @Override
     public void handle(DivinationRequestedEvent event) {
         log.info("Handling DivinationRequestedEvent [processId={}, userId={}, cards={}, userInfo={}]",
                 event.processId(), event.userId(), event.cards(), event.userInfo());
 
-        DivinationRequestDTO divinationRequest = mapToRequest(event);
+        DivinationRequestDTO request = mapToRequest(event);
 
         try {
-            log.debug("Calling divinationService with prompt from request");
-            DivinationGenerationResult generationResult =
-                    divinationService.generateDivination(divinationRequest);
+            DivinationGenerationResult result = divinationService.generateDivination(request);
 
             log.info("Divination generated successfully for processId={}", event.processId());
 
-            DivinationProcess divinationProcess =
-                    mapToEntity(event, generationResult);
-            divinationProcessRepository.save(divinationProcess);
+            DivinationProcess process = buildDivinationProcess(event, result, DivinationGenerationStatus.SUCCESS);
+            divinationProcessRepository.save(process);
 
-            log.info("DivinationProcess persisted to database [divinationId={}, userId={}]",
-                    divinationProcess.getDivinationId(), divinationProcess.getUserId());
+            publishEventToTopics(buildDivinationGenerationEvent(event, DivinationGenerationStatus.SUCCESS, result.responseDTO().content()));
+            sendTokenUsageToManagement(result);
 
-            Event successEvent = mapToDivinationGenerationEvent(
-                    DivinationGenerationStatus.SUCCESS,
-                    generationResult.responseDTO().content(),
-                    event
-            );
+        } catch (Exception ex) {
+            log.error("Divination generation failed for processId={}", event.processId(), ex);
 
-            countAndSendTokenUsageToManagementService(generationResult);
-            publishEventToTopics(successEvent);
+            DivinationProcess failedProcess = buildDivinationProcess(event, null, DivinationGenerationStatus.FAILURE);
+            failedProcess.setPrompt(promptBuilder.buildPrompt(request));
+            divinationProcessRepository.save(failedProcess);
 
-        } catch (Exception exception) {
-
-            log.error("Divination generation failed for processId={}", event.processId(), exception);
-
-            Event failureEvent = mapToDivinationGenerationEvent(
-                    DivinationGenerationStatus.FAILURE,
-                    RandomIntegrationFailMessageGenerator.getRandomFortuneFail(),
-                    event
-            );
-            publishEventToTopics(failureEvent);
+            publishEventToTopics(buildDivinationGenerationEvent(event, DivinationGenerationStatus.FAILURE, RandomIntegrationFailMessageGenerator.getRandomFortuneFail()));
         }
     }
 
-    private void countAndSendTokenUsageToManagementService(DivinationGenerationResult divinationGenerationResult) {
-        int promptTokenUsage = TokenCounter.countTokens(divinationGenerationResult.prompt());
-        int resultTokenUsage = TokenCounter.countTokens(divinationGenerationResult.responseDTO().content());
+    private void sendTokenUsageToManagement(DivinationGenerationResult result) {
+        int promptTokens = TokenCounter.countTokens(result.prompt());
+        int responseTokens = TokenCounter.countTokens(result.responseDTO().content());
 
-        Event event = new SendTokenConsumptionInfoEvent(promptTokenUsage, resultTokenUsage);
-
-        kafkaTemplate.send("management", event);
+        kafkaTemplate.send(MANAGEMENT_TOPIC, new SendTokenConsumptionInfoEvent(promptTokens, responseTokens));
     }
-
 
     private DivinationRequestDTO mapToRequest(DivinationRequestedEvent event) {
         return new DivinationRequestDTO(
@@ -98,25 +84,25 @@ public class DivinationRequestedEventHandler implements EventHandler<DivinationR
         );
     }
 
-    private DivinationProcess mapToEntity(DivinationRequestedEvent event,
-                                          DivinationGenerationResult result) {
-
+    private DivinationProcess buildDivinationProcess(DivinationRequestedEvent event, DivinationGenerationResult result, DivinationGenerationStatus status) {
         DivinationProcess process = new DivinationProcess();
         process.setDivinationId(UUID.randomUUID());
         process.setProcessId(UUID.fromString(event.processId()));
         process.setTarotCards(event.cards());
         process.setUserId(UUID.fromString(event.userId()));
-        process.setStatus(DivinationGenerationStatus.SUCCESS.name());
-        process.setPrompt(result.prompt());
-        process.setLlmModel(result.modelName());
-        process.setResponse(result.responseDTO().content());
+        process.setStatus(status.name());
+
+
+        if (status == DivinationGenerationStatus.SUCCESS && result != null) {
+            process.setPrompt(result.prompt());
+            process.setLlmModel(result.modelName());
+            process.setResponse(result.responseDTO().content());
+        }
+
         return process;
     }
 
-    private Event mapToDivinationGenerationEvent(DivinationGenerationStatus status,
-                                                 String content,
-                                                 DivinationRequestedEvent event) {
-
+    private Event buildDivinationGenerationEvent(DivinationRequestedEvent event, DivinationGenerationStatus status, String content) {
         return new DivinationGenerationEvent(
                 content,
                 status,
@@ -125,8 +111,8 @@ public class DivinationRequestedEventHandler implements EventHandler<DivinationR
         );
     }
 
-
     private void publishEventToTopics(Event event) {
         DESTINATION_TOPICS.forEach(topic -> kafkaTemplate.send(topic, event));
     }
 }
+

@@ -38,6 +38,11 @@ spring:
           uri: http://localhost:8088
           predicates:
             - Path=/management-service/**
+
+        - id: divination_route
+          uri: http://localhost:8087
+          predicates:
+            - Path=/divination-service/**
 management:
   endpoints:
     web:

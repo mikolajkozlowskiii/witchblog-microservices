@@ -13,7 +13,7 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/divination-service")
+@RequestMapping("divination-service")
 @RequiredArgsConstructor
 @Slf4j
 public class DivinationController {

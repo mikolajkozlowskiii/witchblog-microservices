@@ -8,6 +8,7 @@ import com.example.divinationservice.model.DivinationProcess;
 import com.example.divinationservice.repository.DivinationProcessRepository;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.common.eventing.core.model.Event;
@@ -49,6 +50,7 @@ public class DivinationServiceImpl implements DivinationService{
     }
 
     @Override
+    @Transactional
     public Optional<String> retryIntegration(UUID processId) {
         try {
             DivinationProcess process = repository
