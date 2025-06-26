@@ -14,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.common.eventing.core.model.Event;
 import org.common.eventing.gpt.event.DivinationGenerationEvent;
 import org.common.model.DivinationGenerationStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -56,6 +58,10 @@ public class DivinationServiceImpl implements DivinationService{
             DivinationProcess process = repository
                     .getDivinationProcessByProcessId(processId)
                     .orElseThrow();
+            if (!process.getStatus().equals(DivinationGenerationStatus.FAILURE.name())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Divination is in wrong state");
+            }
+
             String divinationResult = chatModel.chat(process.getPrompt());
             process.setResponse(divinationResult);
             process.setStatus(DivinationGenerationStatus.SUCCESS.name());
