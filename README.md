@@ -49,5 +49,7 @@ This will install the common-module and any shared dependencies to your local Ma
 2. **gateway-service** — API Gateway for routing requests  
 3. **orchestrator-service** — Core logic for managing jobs and communication  
 4. **payment-service** — Handles payment flow and Kafka event publishing
+5. **divination-service** — Creates divination by integration with LLM, based on user info and payement process
+6. **management-service** — Calculates balance based on payments and the tokens spent to generate divination
 
 
