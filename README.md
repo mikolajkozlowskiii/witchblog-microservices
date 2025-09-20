@@ -15,8 +15,7 @@ export OPENAI_API_KEY=your_api_key_here
 
 ## Frontend
 
-The frontend application can be accessed at: [Frontend Repository/URL - Please add the actual link here]
-
+The frontend application can be accessed at: [Frontend Repository](https://github.com/mpszkudlarek/witch-blog)
 ## API Communication
 
 The application works with both **WebSocket** and standard **REST API** calls.
