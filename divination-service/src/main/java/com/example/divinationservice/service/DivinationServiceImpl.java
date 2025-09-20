@@ -61,11 +61,6 @@ public class DivinationServiceImpl implements DivinationService{
                     .getDivinationProcessByProcessId(processId)
                     .orElseThrow(() -> new NoSuchElementException("Not found divination with process id: " + processId.toString()));
 
-            if (!process.getStatus().equals(DivinationGenerationStatus.FAILURE.name())){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Divination is in wrong state");
-            }
-            log.info("Found Divination Process for id {}", processId);
-
             final String llmAnswer = chatModel.chat(process.getPrompt());
 
             log.info("LLM responded for processId={} (userId={})", process.getProcessId(), process.getUserId());
