@@ -1,4 +1,27 @@
-# 🧙 Witchblog 2.0 
+#  Witchblog 2.0
+
+## Setup
+
+### First Step: Generate OpenAI API Key
+
+Before starting the application, you need to generate an API key from OpenAI:
+
+1. Go to [OpenAI Platform API Keys](https://platform.openai.com/api-keys)
+2. Generate a new API key
+3. Export the environment variable:
+```bash
+export OPENAI_API_KEY=your_api_key_here
+```
+
+## Frontend
+
+The frontend application can be accessed at: [Frontend Repository/URL - Please add the actual link here]
+
+## API Communication
+
+The application works with both **WebSocket** and standard **REST API** calls.
+
+For REST API examples, check the `/collections` folder which contains Postman collections with sample requests and responses.
 
 ##  Kafka (KRaft Mode — No Zookeeper)
 
@@ -45,11 +68,9 @@ This will install the common-module and any shared dependencies to your local Ma
 
 ## 2. Start Microservices in the Following Order
 
-1. **registry-service** — Service discovery via Eureka  
-2. **gateway-service** — API Gateway for routing requests  
-3. **orchestrator-service** — Core logic for managing jobs and communication  
-4. **payment-service** — Handles payment flow and Kafka event publishing
+1. **registry-service** — Service discovery via Eureka
+2. **gateway-service** — API Gateway for routing requests
+3. **orchestrator-service** — Core logic for managing processes and communication
+4. **payment-service** — Handles payment flow and Kafka event publishing (dummy BLIK logic)
 5. **divination-service** — Creates divination by integration with LLM, based on user info and payement process
 6. **management-service** — Calculates balance based on payments and the tokens spent to generate divination
-
-
