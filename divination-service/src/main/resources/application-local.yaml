@@ -16,7 +16,6 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        ddl-auto: create-drop
         default_schema: divination
   sql:
     init:
