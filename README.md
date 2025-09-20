@@ -1,17 +1,5 @@
 #  Witchblog 2.0
 This is the backend part of the Witchblog project, built as a microservices architecture with event-driven communication. The entire process is orchestrated by the orchestrator microservice, supporting both WebSocket connections for real-time frontend communication and REST API calls.
-## Setup
-
-### First Step: Generate OpenAI API Key
-
-Before starting the application, you need to generate an API key from OpenAI:
-
-1. Go to [OpenAI Platform API Keys](https://platform.openai.com/api-keys)
-2. Generate a new API key
-3. Export the environment variable:
-```bash
-export OPENAI_API_KEY=your_api_key_here
-```
 
 ## Frontend
 
@@ -42,6 +30,21 @@ Administrators can check profit. The system calculates profit by subtracting LLM
 ## Architecture Diagram
 
 ![Architecture Diagram](diagrams/architecture.svg)
+
+
+## Setup
+
+### First Step: Generate OpenAI API Key
+
+Before starting the application, you need to generate an API key from OpenAI:
+
+1. Go to [OpenAI Platform API Keys](https://platform.openai.com/api-keys)
+2. Generate a new API key
+3. Export the environment variable:
+```bash
+export OPENAI_API_KEY=your_api_key_here
+```
+
 
 ##  Kafka (KRaft Mode — No Zookeeper)
 
