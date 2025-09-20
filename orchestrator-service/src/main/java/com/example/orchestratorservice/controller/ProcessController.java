@@ -5,8 +5,11 @@ import com.example.orchestratorservice.repository.DivinationProcessRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.common.eventing.core.model.Event;
+import org.common.eventing.payment.event.RequestPaymentInfoEvent;
 import org.common.model.UserInfo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.UUID;
 public class ProcessController {
     private final DivinationProcessRepository divinationProcessRepository;
     private final ObjectMapper objectMapper;
+    private final KafkaTemplate<String, Event> kafkaTemplate;
 
     @PostMapping("/process/{userId}")
     public ResponseEntity<String> startProcess(@PathVariable("userId") String userId, @RequestBody UserInfo userInfo) throws JsonProcessingException {
@@ -26,6 +30,7 @@ public class ProcessController {
         divinationProcess.setUserId(UUID.fromString(userId));
         divinationProcess.setUserInfo(userInfo);
         divinationProcessRepository.save(divinationProcess);
+        kafkaTemplate.send("payment", new RequestPaymentInfoEvent(userId, divinationProcess.getId().toString()));
         return ResponseEntity.ok(objectMapper.writeValueAsString(divinationProcess));
     }
 
