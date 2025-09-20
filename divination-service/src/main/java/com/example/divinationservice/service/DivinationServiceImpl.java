@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,20 +55,28 @@ public class DivinationServiceImpl implements DivinationService{
     @Override
     @Transactional
     public Optional<String> retryIntegration(UUID processId) {
+        log.info("Retry divination process for process id: {}", processId);
         try {
             DivinationProcess process = repository
                     .getDivinationProcessByProcessId(processId)
-                    .orElseThrow();
+                    .orElseThrow(() -> new NoSuchElementException("Not found divination with process id: " + processId.toString()));
+
             if (!process.getStatus().equals(DivinationGenerationStatus.FAILURE.name())){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Divination is in wrong state");
             }
+            log.info("Found Divination Process for id {}", processId);
 
-            String divinationResult = chatModel.chat(process.getPrompt());
-            process.setResponse(divinationResult);
+            final String llmAnswer = chatModel.chat(process.getPrompt());
+
+            log.info("LLM responded for processId={} (userId={})", process.getProcessId(), process.getUserId());
+
+            log.info("Divination: {}", llmAnswer);
+
+            process.setResponse(llmAnswer);
             process.setStatus(DivinationGenerationStatus.SUCCESS.name());
             repository.save(process);
-            kafkaTemplate.send("orchestrator", new DivinationGenerationEvent(divinationResult, DivinationGenerationStatus.SUCCESS, processId.toString(), process.getUserId().toString()));
-            return Optional.of(divinationResult);
+            kafkaTemplate.send("orchestrator", new DivinationGenerationEvent(llmAnswer, DivinationGenerationStatus.SUCCESS, processId.toString(), process.getUserId().toString()));
+            return Optional.of(llmAnswer);
         } catch (Exception exception) {
             return Optional.empty();
         }
