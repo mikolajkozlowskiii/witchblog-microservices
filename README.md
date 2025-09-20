@@ -1,5 +1,5 @@
 #  Witchblog 2.0
-
+This is the backend part of the Witchblog project, built as a microservices architecture with event-driven communication. The entire process is orchestrated by the orchestrator microservice, supporting both WebSocket connections for real-time frontend communication and REST API calls.
 ## Setup
 
 ### First Step: Generate OpenAI API Key
@@ -21,6 +21,27 @@ The frontend application can be accessed at: [Frontend Repository](https://githu
 The application works with both **WebSocket** and standard **REST API** calls.
 
 For REST API examples, check the `/collections` folder which contains Postman collections with sample requests and responses.
+
+## Succesfull Basic Application Flow
+
+Here are the simple steps for a successful divination process:
+
+1. **Register User** - Create a user with unique ID and personal details (name, date of birth, favorite color, relationship status, favorite number)
+2. **BLIK Payment** - User pays for divination for the created process for specific user 
+3. **Generate Divination** - If payment is successful, it triggers an event to generate divination:
+    - 3.1) Random tarot cards are generated with meanings and possible reversing cards
+    - 3.2) Build prompt for divination based on user info and drawn tarot cards
+    - 3.3) Call LLM (Large Language Model) and get the divination answer
+
+    
+Administrators can check profit. The system calculates profit by subtracting LLM token costs from total payments received from users.
+
+**Note**: For a more detailed BPMN process flow, check the diagrams folder.
+
+
+## Architecture Diagram
+
+![Architecture Diagram](diagrams/architecture.svg)
 
 ##  Kafka (KRaft Mode — No Zookeeper)
 
