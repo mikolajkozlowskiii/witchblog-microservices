@@ -19,7 +19,7 @@ Here are the simple steps for a successful divination process:
 3. **Generate Divination** - If payment is successful, it triggers an event to generate divination:
     - 3.1) Random tarot cards are generated with meanings and possible reversing cards
     - 3.2) Build prompt for divination based on user info and drawn tarot cards
-    - 3.3) Call LLM (Large Language Model) and get the divination answer
+    - 3.3) Call LLM and get the divination answer
 
     
 Administrators can check profit. The system calculates profit by subtracting LLM token costs from total payments received from users.
