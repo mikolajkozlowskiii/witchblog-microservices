@@ -14,5 +14,8 @@ public interface DivinationProcessRepository extends JpaRepository<DivinationPro
     List<DivinationProcess> getDivinationProcessesByStatus(String status);
 
     Optional<DivinationProcess> getDivinationProcessByProcessId(UUID processId);
+
+    List<DivinationProcess> getAllByUserId(UUID userId);
+
 }
 

@@ -2,8 +2,10 @@ package com.example.divinationservice.service;
 
 import com.example.divinationservice.component.PromptBuilder;
 import com.example.divinationservice.dto.DivinationGenerationResult;
+import com.example.divinationservice.dto.DivinationProcessDTO;
 import com.example.divinationservice.dto.DivinationRequestDTO;
 import com.example.divinationservice.dto.DivinationResponseDTO;
+import com.example.divinationservice.mapper.DivinationProcessMapper;
 import com.example.divinationservice.model.DivinationProcess;
 import com.example.divinationservice.repository.DivinationProcessRepository;
 import dev.langchain4j.model.chat.ChatModel;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,6 +35,7 @@ public class DivinationServiceImpl implements DivinationService{
     private final PromptBuilder promptBuilder;
     private final KafkaTemplate<String, Event> kafkaTemplate;
     private final DivinationProcessRepository repository;
+    private final DivinationProcessMapper divinationProcessMapper;
 
     @Override
     public DivinationGenerationResult generateDivination(DivinationRequestDTO divinationRequestDTO) {
@@ -76,5 +80,14 @@ public class DivinationServiceImpl implements DivinationService{
             return Optional.empty();
         }
 
+    }
+
+    @Override
+    public List<DivinationProcessDTO> findDivinationProcessByUserId(UUID userId) {
+        log.info("Fetching DivinationProcess entities for user id: {}", userId.toString());
+        return repository.getAllByUserId(userId)
+                .stream()
+                .map(divinationProcessMapper::toDto)
+                .toList();
     }
 }

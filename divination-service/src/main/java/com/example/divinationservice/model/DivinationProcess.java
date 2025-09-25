@@ -39,8 +39,7 @@ public class DivinationProcess {
     @Column
     private String status;
 
-    @Column
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String prompt;
 
     @Column
